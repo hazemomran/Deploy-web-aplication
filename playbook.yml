@@ -1,0 +1,42 @@
+- name: Install Docker, pull image, and run container on target machines
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install prerequisites for Docker
+      apt:
+        name: ["apt-transport-https", "ca-certificates", "curl", "software-properties-common"]
+        state: present
+
+    - name: Add Docker GPG key
+      ansible.builtin.shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: ["docker-ce", "docker-ce-cli", "containerd.io"]
+        state: present
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull Docker image
+      docker_image:
+        name: "hazemomran/deploy-webapp"
+        source: pull
+
+    - name: Run Docker container
+      docker_container:
+        name: "flask-app"
+        image: "hazemomran/deploy-webapp"
+        state: started
+        ports:
+          - "5000:5000"

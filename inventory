@@ -1,0 +1,20 @@
+all:
+  hosts:
+    machine1:
+      ansible_host: 192.168.56.14
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: machinekey1.pem
+    machine2:
+      ansible_host: 192.168.56.22
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: machinekey2.pem
+
+  children:
+    machines:
+      hosts:
+        machine1:
+        machine2:
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.10
+
